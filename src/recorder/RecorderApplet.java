@@ -63,7 +63,6 @@ public class RecorderApplet extends JApplet {
     public RecorderApplet() {}
     public void init() {
         setSize(300, 200);
-
         //Execute a job on the event-dispatching thread; creating this applet's GUI.
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -197,23 +196,20 @@ public class RecorderApplet extends JApplet {
             String charset = "UTF-8";
             URLConnection urlConnection;
             String servletURL = this.getParameter("servletURL");
-            urlConnection = new URL(
-                    servletURL+"?pid="+pid)
-            .openConnection();
+            urlConnection = new URL(servletURL+"?pid="+pid).openConnection();
 
             urlConnection.setConnectTimeout(20000); // long timeout, but not
             urlConnection.setReadTimeout(20000);
             urlConnection.setUseCaches(false);
             urlConnection.setDoOutput(true); // Triggers POST.
             urlConnection.setRequestProperty("accept-charset", charset);
-            urlConnection.setRequestProperty("content-type",
-                    "binary/octet-stream");
+            urlConnection.setRequestProperty("content-type", "binary/octet-stream");
             OutputStream os = urlConnection.getOutputStream();
 
             os.write(baos.toByteArray());
             os.flush();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(
-                    urlConnection.getInputStream()));
+            InputStream is = urlConnection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             String xml;
             StringBuffer sb = new StringBuffer();
             while ((xml = rd.readLine()) != null) {
@@ -358,7 +354,7 @@ public class RecorderApplet extends JApplet {
     }
     public void closeASRDlg() {
         JSObject win = (JSObject) JSObject.getWindow(this);
-        win.call("closeASRDlg", null);             
+        win.call("closeASRDlg", null);
     }
 
     public void setPid(String pid){
